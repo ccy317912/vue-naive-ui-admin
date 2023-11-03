@@ -83,18 +83,23 @@ export function useFormEvents({
   }
 
   // 设置表单字段值
-  async function setFieldsValue(values: Recordable): Promise<void> {
+  function setFieldsValue(values: Recordable): void {
     console.log(values);
     const fields = unref(getSchema)
       .map((item) => {
         return isArray(item.field) ? item.field[0] : item.field;
       })
       .filter(Boolean);
-
+    const validKeys: string[] = [];
     Object.keys(values).forEach((key) => {
       const value = values[key];
-      if (fields.includes(key)) {
-        formModel[key] = isObject(value) ? merge(formModel[key], value) : value;
+      const hasKey = Reflect.has(values, key);
+      // if (fields.includes(key)) {
+      //   formModel[key] = isObject(value) ? merge(formModel[key], value) : value;
+      // }
+      if (hasKey && fields.includes(key)) {
+        formModel[key] = value;
+        validKeys.push(key);
       }
     });
   }
